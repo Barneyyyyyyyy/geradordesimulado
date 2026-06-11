@@ -192,7 +192,7 @@ export const finalizeSimulado = createServerFn({ method: "POST" })
           .map((q, i) => `Q${i + 1} [${q.assunto}]: ${q.acertou ? "ACERTOU" : `ERROU (gabarito ${q.gabarito}, marcou ${q.resposta_aluno ?? "—"})`}`)
           .join("\n");
         const { text } = await generateText({
-          model: gateway("google/gemini-3-flash-preview"),
+          model: gateway("google/gemini-2.5-flash"),
           prompt: `Você é um tutor de vestibular. Analise o desempenho do aluno neste simulado e gere um feedback CURTO (máx. 6 linhas) em português brasileiro, em tom motivador.
 
 Resultado:
