@@ -66,7 +66,7 @@ Retorne APENAS um array JSON válido, sem markdown, sem texto antes ou depois, n
 ]`;
 
   const { text } = await generateText({
-    model: gateway("google/gemini-3-flash-preview"),
+    model: gateway("google/gemini-2.5-flash"),
     prompt,
   });
 
