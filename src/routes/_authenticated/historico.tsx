@@ -36,7 +36,7 @@ function Historico() {
             <Link
               key={s.id}
               to={target as any}
-              params={{ id: s.id }}
+              params={{ id: s.id } as any}
               className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 active:scale-[0.99]"
             >
               <div className="min-w-0">

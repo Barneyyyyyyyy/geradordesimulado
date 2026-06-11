@@ -1,23 +1,16 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getDashboard } from "@/lib/simulados.functions";
-import { supabase } from "@/integrations/supabase/client";
-import { LogOut, Flame, Zap } from "lucide-react";
+import { Flame, Zap } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
   component: Perfil,
 });
 
 function Perfil() {
-  const navigate = useNavigate();
   const fetchDash = useServerFn(getDashboard);
   const { data } = useQuery({ queryKey: ["dashboard"], queryFn: () => fetchDash() });
-
-  async function logout() {
-    await supabase.auth.signOut();
-    navigate({ to: "/" });
-  }
 
   const nome = data?.profile?.nome ?? "Estudante";
   const stats = data?.stats;
@@ -48,13 +41,6 @@ function Perfil() {
           <p className="text-xs text-muted-foreground">XP totais</p>
         </div>
       </div>
-
-      <button
-        onClick={logout}
-        className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
-      >
-        <LogOut className="size-4" /> Sair
-      </button>
     </div>
   );
 }
