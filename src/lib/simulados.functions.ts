@@ -44,24 +44,44 @@ async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<Ge
   const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
   const gateway = createLovableAiGatewayProvider(apiKey);
 
-  const prompt = `Gere ${input.quantidade} questões inéditas de múltipla escolha (5 alternativas A-E) no estilo da banca ${BANCA_LABEL[input.banca]}, da área ${AREA_LABEL[input.area]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
+  const prompt = `Você é um especialista em vestibulares brasileiros com profundo conhecimento das provas REAIS da banca ${BANCA_LABEL[input.banca]}.
 
-REGRAS OBRIGATÓRIAS:
-- Conteúdo em PORTUGUÊS BRASILEIRO.
-- Questões coerentes com o estilo real da banca (ex.: ENEM usa contextos do cotidiano e textos-base; FUVEST/UNICAMP/UNESP costumam ter enunciados mais técnicos e diretos).
-- Cada questão deve abordar um assunto específico do programa de ${AREA_LABEL[input.area]}.
-- As 5 alternativas devem ser plausíveis, sem repetir o gabarito de forma óbvia.
-- A "explicacao" deve ser didática, passo a passo (3-6 frases), explicando por que a correta é correta E por que pelo menos 2 distratores estão errados.
-- VARIE os assuntos entre as questões.
+Gere ${input.quantidade} questões de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
 
-Retorne APENAS um array JSON válido, sem markdown, sem texto antes ou depois, no formato:
+METODOLOGIA OBRIGATÓRIA:
+- BASEIE cada questão em uma QUESTÃO REAL já aplicada pela banca em anos anteriores (use seu conhecimento das provas oficiais 2010-2024).
+- ADAPTE a questão original: pode mudar números, contexto ou texto-base, mas PRESERVE o estilo, estrutura e nível cognitivo da banca.
+- NUNCA invente questões em estilo genérico — sempre se inspire numa questão real específica.
+- Se NÃO tiver certeza absoluta do gabarito correto, NÃO inclua a questão. Prefira gerar menos questões a incluir alguma com gabarito errado.
+
+VALIDAÇÃO DO GABARITO (CRÍTICO):
+- Antes de definir o gabarito, RESOLVA a questão passo a passo mentalmente.
+- Verifique se APENAS UMA alternativa está correta e que as outras 4 são demonstravelmente incorretas (não ambíguas).
+- Matemática/Física/Química: refaça os cálculos e confira unidades.
+- Linguagens/Humanas: confirme a interpretação com base no texto/contexto fornecido no próprio enunciado.
+
+ESTILO POR BANCA:
+- ENEM: contexto do cotidiano, textos-base, abordagem interdisciplinar.
+- FUVEST: enunciados técnicos, diretos, exigem domínio conceitual profundo.
+- UNICAMP: contextualizadas com texto-base, exigem raciocínio e interpretação.
+- UNESP: enunciados claros, textos científicos ou literários como base.
+
+REGRAS:
+- Português brasileiro.
+- Varie os assuntos entre as questões.
+- Alternativas plausíveis, sem repetição óbvia do gabarito.
+- "explicacao": didática (3-6 frases), explicando o raciocínio correto E refutando pelo menos 2 distratores.
+- No "assunto" inclua o tema + referência (ex: "Funções quadráticas (estilo FUVEST 2019)").
+- Se a questão depende de um texto-base, INCLUA o texto dentro do "enunciado".
+
+Retorne APENAS um array JSON válido, sem markdown:
 [
   {
-    "assunto": "string curta (ex: 'Funções quadráticas')",
-    "enunciado": "string completa do enunciado",
+    "assunto": "tema + referência de ano",
+    "enunciado": "enunciado completo (incluindo texto-base se houver)",
     "alternativas": { "A": "...", "B": "...", "C": "...", "D": "...", "E": "..." },
     "gabarito": "A" | "B" | "C" | "D" | "E",
-    "explicacao": "string didática"
+    "explicacao": "explicação didática com refutação de distratores"
   }
 ]`;
 
