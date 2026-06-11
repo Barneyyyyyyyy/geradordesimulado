@@ -14,7 +14,155 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          id: string
+          nome: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          nome?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          nome?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      questoes: {
+        Row: {
+          acertou: boolean | null
+          alternativas: Json
+          assunto: string
+          created_at: string
+          enunciado: string
+          explicacao: string
+          gabarito: string
+          id: string
+          ordem: number
+          resposta_aluno: string | null
+          simulado_id: string
+        }
+        Insert: {
+          acertou?: boolean | null
+          alternativas: Json
+          assunto: string
+          created_at?: string
+          enunciado: string
+          explicacao: string
+          gabarito: string
+          id?: string
+          ordem: number
+          resposta_aluno?: string | null
+          simulado_id: string
+        }
+        Update: {
+          acertou?: boolean | null
+          alternativas?: Json
+          assunto?: string
+          created_at?: string
+          enunciado?: string
+          explicacao?: string
+          gabarito?: string
+          id?: string
+          ordem?: number
+          resposta_aluno?: string | null
+          simulado_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questoes_simulado_id_fkey"
+            columns: ["simulado_id"]
+            isOneToOne: false
+            referencedRelation: "simulados"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      simulados: {
+        Row: {
+          acertos: number
+          area: Database["public"]["Enums"]["area_conhecimento"]
+          banca: Database["public"]["Enums"]["banca_vestibular"]
+          created_at: string
+          dificuldade: Database["public"]["Enums"]["dificuldade"]
+          feedback_ia: string | null
+          finalizado_at: string | null
+          id: string
+          quantidade_questoes: number
+          status: Database["public"]["Enums"]["simulado_status"]
+          tempo_segundos: number
+          user_id: string
+        }
+        Insert: {
+          acertos?: number
+          area: Database["public"]["Enums"]["area_conhecimento"]
+          banca: Database["public"]["Enums"]["banca_vestibular"]
+          created_at?: string
+          dificuldade: Database["public"]["Enums"]["dificuldade"]
+          feedback_ia?: string | null
+          finalizado_at?: string | null
+          id?: string
+          quantidade_questoes: number
+          status?: Database["public"]["Enums"]["simulado_status"]
+          tempo_segundos?: number
+          user_id: string
+        }
+        Update: {
+          acertos?: number
+          area?: Database["public"]["Enums"]["area_conhecimento"]
+          banca?: Database["public"]["Enums"]["banca_vestibular"]
+          created_at?: string
+          dificuldade?: Database["public"]["Enums"]["dificuldade"]
+          feedback_ia?: string | null
+          finalizado_at?: string | null
+          id?: string
+          quantidade_questoes?: number
+          status?: Database["public"]["Enums"]["simulado_status"]
+          tempo_segundos?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_stats: {
+        Row: {
+          meta_diaria: number
+          nivel: number
+          streak_dias: number
+          ultima_atividade: string | null
+          updated_at: string
+          user_id: string
+          xp: number
+        }
+        Insert: {
+          meta_diaria?: number
+          nivel?: number
+          streak_dias?: number
+          ultima_atividade?: string | null
+          updated_at?: string
+          user_id: string
+          xp?: number
+        }
+        Update: {
+          meta_diaria?: number
+          nivel?: number
+          streak_dias?: number
+          ultima_atividade?: string | null
+          updated_at?: string
+          user_id?: string
+          xp?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +171,10 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      area_conhecimento: "matematica" | "linguagens" | "humanas" | "natureza"
+      banca_vestibular: "enem" | "fuvest" | "unicamp" | "unesp"
+      dificuldade: "facil" | "medio" | "dificil" | "misto"
+      simulado_status: "em_andamento" | "finalizado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +301,11 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      area_conhecimento: ["matematica", "linguagens", "humanas", "natureza"],
+      banca_vestibular: ["enem", "fuvest", "unicamp", "unesp"],
+      dificuldade: ["facil", "medio", "dificil", "misto"],
+      simulado_status: ["em_andamento", "finalizado"],
+    },
   },
 } as const
