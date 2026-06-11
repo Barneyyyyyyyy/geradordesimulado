@@ -71,11 +71,20 @@ Retorne APENAS um array JSON válido, sem markdown, sem texto antes ou depois, n
   });
 
   // Strip markdown fences if present
-  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
+  let cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
   const start = cleaned.indexOf("[");
   const end = cleaned.lastIndexOf("]");
   if (start === -1 || end === -1) throw new Error("IA não retornou JSON válido");
-  const parsed = JSON.parse(cleaned.slice(start, end + 1)) as GeneratedQuestion[];
+  cleaned = cleaned.slice(start, end + 1);
+  // Remove control chars and fix invalid escape sequences from LLM output
+  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
+  let parsed: GeneratedQuestion[];
+  try {
+    parsed = JSON.parse(cleaned) as GeneratedQuestion[];
+  } catch {
+    const fixed = cleaned.replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\");
+    parsed = JSON.parse(fixed) as GeneratedQuestion[];
+  }
 
   return parsed.filter(
     (q) =>
