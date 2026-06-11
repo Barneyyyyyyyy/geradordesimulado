@@ -9,14 +9,8 @@ export const Route = createFileRoute("/_authenticated/perfil")({
 });
 
 function Perfil() {
-  const navigate = useNavigate();
   const fetchDash = useServerFn(getDashboard);
   const { data } = useQuery({ queryKey: ["dashboard"], queryFn: () => fetchDash() });
-
-  async function logout() {
-    await supabase.auth.signOut();
-    navigate({ to: "/" });
-  }
 
   const nome = data?.profile?.nome ?? "Estudante";
   const stats = data?.stats;
@@ -47,13 +41,6 @@ function Perfil() {
           <p className="text-xs text-muted-foreground">XP totais</p>
         </div>
       </div>
-
-      <button
-        onClick={logout}
-        className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-card py-3.5 text-sm font-semibold text-muted-foreground hover:text-foreground"
-      >
-        <LogOut className="size-4" /> Sair
-      </button>
     </div>
   );
 }
