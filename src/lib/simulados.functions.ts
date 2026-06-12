@@ -137,7 +137,10 @@ Português brasileiro. Retorne APENAS um array JSON válido, sem markdown, sem t
   });
 
   const raw = extractJsonArray(text);
-  if (!raw) throw new Error("Resposta da IA inválida. Tente novamente.");
+  if (!raw) {
+    console.error("[simulados] AI response não parseável:", text.slice(0, 1500));
+    throw new Error("Resposta da IA inválida. Tente novamente.");
+  }
 
   const valid: GeneratedQuestion[] = [];
   for (const q of raw) {
