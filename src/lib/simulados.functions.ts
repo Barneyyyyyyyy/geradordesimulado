@@ -111,9 +111,10 @@ PADRÃO DE ENUNCIADO:
 - EVITE enunciados didáticos. O aluno deve interpretar e aplicar conceitos.
 
 CONSTRUÇÃO DAS ALTERNATIVAS:
-1. Resolva internamente passo a passo e determine o gabarito.
+1. Resolva internamente passo a passo e determine o VALOR/RESULTADO correto.
 2. Gere DISTRATORES plausíveis representando erros comuns.
 3. Garanta EXATAMENTE UMA alternativa correta.
+4. CONFERÊNCIA DO GABARITO: após calcular o resultado final, percorra as 5 alternativas (A-E) e identifique explicitamente qual delas contém esse valor. Defina o campo "gabarito" como a letra dessa alternativa. Se nenhuma alternativa corresponder ao valor calculado, DESCARTE a questão e gere outra. Nunca marque como gabarito uma letra cujo conteúdo não bate com o resultado.
 
 VALIDAÇÃO INTERNA: gabarito conferido, cálculos verificados, coerência, uma só correta, distratores plausíveis, nível da banca. Se falhar, regenere ou omita.
 
