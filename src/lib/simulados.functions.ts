@@ -44,44 +44,61 @@ async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<Ge
   const { createLovableAiGatewayProvider } = await import("./ai-gateway.server");
   const gateway = createLovableAiGatewayProvider(apiKey);
 
-  const prompt = `Você é um especialista em vestibulares brasileiros com profundo conhecimento das provas REAIS da banca ${BANCA_LABEL[input.banca]}.
+  const prompt = `Você é um especialista em vestibulares brasileiros (ENEM, FUVEST, UNICAMP, UNESP, ITA, IME, ESA, EsPCEx, AFA, EFOMM) com conhecimento profundo das provas reais.
 
-Gere ${input.quantidade} questões de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
+Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
 
-METODOLOGIA OBRIGATÓRIA:
-- BASEIE cada questão em uma QUESTÃO REAL já aplicada pela banca em anos anteriores (use seu conhecimento das provas oficiais 2010-2024).
-- ADAPTE a questão original: pode mudar números, contexto ou texto-base, mas PRESERVE o estilo, estrutura e nível cognitivo da banca.
-- NUNCA invente questões em estilo genérico — sempre se inspire numa questão real específica.
-- Se NÃO tiver certeza absoluta do gabarito correto, NÃO inclua a questão. Prefira gerar menos questões a incluir alguma com gabarito errado.
+QUALIDADE E AUTENTICIDADE:
+- Use questões reais da banca como INSPIRAÇÃO ESTRUTURAL apenas. PRESERVE: habilidade avaliada, raciocínio exigido, nível de dificuldade, estilo da banca.
+- ALTERE OBRIGATORIAMENTE: contexto, personagens, cenários, dados numéricos, textos-base e exemplos. NUNCA copie integralmente uma questão real.
+- A questão deve ser INÉDITA mas com o mesmo padrão cognitivo das provas originais.
 
-VALIDAÇÃO DO GABARITO (CRÍTICO):
-- Antes de definir o gabarito, RESOLVA a questão passo a passo mentalmente.
-- Verifique se APENAS UMA alternativa está correta e que as outras 4 são demonstravelmente incorretas (não ambíguas).
-- Matemática/Física/Química: refaça os cálculos e confira unidades.
-- Linguagens/Humanas: confirme a interpretação com base no texto/contexto fornecido no próprio enunciado.
+PADRÃO DE ENUNCIADO:
+- NÃO crie textos genéricos ou explicações de apostila.
+- PRIORIZE: reportagens, gráficos (descritos textualmente), tabelas, mapas (descritos), trechos de livros, artigos científicos, documentos históricos, charges/tirinhas (descritas), campanhas publicitárias, situações-problema contextualizadas.
+- EVITE enunciados didáticos que expliquem o conteúdo antes de perguntar. O aluno deve interpretar, relacionar informações e aplicar conceitos.
+- Se a questão depende de texto/tabela/gráfico, INCLUA dentro do "enunciado".
+
+CONSTRUÇÃO DAS ALTERNATIVAS (CRÍTICO):
+1. Resolva a questão internamente passo a passo.
+2. Determine o gabarito correto com certeza absoluta.
+3. Gere DISTRATORES plausíveis — cada um representando um ERRO COMUM de estudante (cálculo errado, conceito invertido, interpretação parcial).
+4. Reverifique cálculos, unidades, arredondamentos e conversões.
+5. Garanta que exista EXATAMENTE UMA alternativa correta — proibido: duas corretas, nenhuma correta, gabarito ambíguo.
+6. A alternativa correta NÃO pode ser identificada apenas por repetir palavras do texto-base.
+7. Evite alternativas absurdas ou obviamente erradas.
+
+VALIDAÇÃO INTERNA (execute antes de incluir a questão):
+✓ Gabarito verificado resolvendo do zero
+✓ Cálculos, unidades e conversões conferidos
+✓ Coerência do enunciado
+✓ Apenas UMA alternativa correta
+✓ Distratores plausíveis
+✓ Nível compatível com a banca
+✓ Estilo da banca preservado
+Se QUALQUER verificação falhar, REGENERE. Se ainda assim não tiver certeza, NÃO inclua — prefira gerar menos.
 
 ESTILO POR BANCA:
-- ENEM: contexto do cotidiano, textos-base, abordagem interdisciplinar.
-- FUVEST: enunciados técnicos, diretos, exigem domínio conceitual profundo.
-- UNICAMP: contextualizadas com texto-base, exigem raciocínio e interpretação.
-- UNESP: enunciados claros, textos científicos ou literários como base.
+- ENEM: contextos do cotidiano, interdisciplinar, foco em interpretação.
+- FUVEST: técnico, direto, exige domínio conceitual profundo.
+- UNICAMP: contextualizado com texto-base, raciocínio e interpretação.
+- UNESP: enunciados claros, textos científicos/literários.
+- ITA/IME: alto rigor matemático/físico, múltiplas etapas.
+- ESA/EsPCEx/AFA/EFOMM: objetivo, aplicação direta de conceitos.
 
-REGRAS:
-- Português brasileiro.
-- Varie os assuntos entre as questões.
-- Alternativas plausíveis, sem repetição óbvia do gabarito.
-- "explicacao": didática (3-6 frases), explicando o raciocínio correto E refutando pelo menos 2 distratores.
-- No "assunto" inclua o tema + referência (ex: "Funções quadráticas (estilo FUVEST 2019)").
-- Se a questão depende de um texto-base, INCLUA o texto dentro do "enunciado".
+CAMPO "explicacao" — análise pedagógica COMPLETA, estruturada assim (use \\n para quebras):
+"**Gabarito:** [letra]\\n**Área:** [área]\\n**Competência/Habilidade:** [descrição]\\n**Dificuldade:** [Fácil/Médio/Difícil]\\n**Resolução:** [passo a passo detalhado]\\n**Erros comuns:** [explique brevemente qual erro leva a cada distrator]"
 
-Retorne APENAS um array JSON válido, sem markdown:
+CAMPO "assunto": tema + referência de banca/ano de inspiração (ex: "Funções quadráticas (inspirado em FUVEST 2019)").
+
+Português brasileiro. Varie os assuntos. Retorne APENAS um array JSON válido, sem markdown:
 [
   {
-    "assunto": "tema + referência de ano",
-    "enunciado": "enunciado completo (incluindo texto-base se houver)",
+    "assunto": "tema + referência",
+    "enunciado": "enunciado completo com texto-base se houver",
     "alternativas": { "A": "...", "B": "...", "C": "...", "D": "...", "E": "..." },
     "gabarito": "A" | "B" | "C" | "D" | "E",
-    "explicacao": "explicação didática com refutação de distratores"
+    "explicacao": "análise pedagógica estruturada conforme especificado"
   }
 ]`;
 
