@@ -37,7 +37,21 @@ interface GeneratedQuestion {
   explicacao: string;
 }
 
-function extractJsonArray(text: string): any[] | null {
+const GeneratedQuestionSchema = z.object({
+  assunto: z.string().min(3),
+  enunciado: z.string().min(20),
+  alternativas: z.object({
+    A: z.string().min(1),
+    B: z.string().min(1),
+    C: z.string().min(1),
+    D: z.string().min(1),
+    E: z.string().min(1),
+  }),
+  gabarito: z.enum(["A", "B", "C", "D", "E"]),
+  explicacao: z.string().min(10),
+});
+
+
   let cleaned = text
     .replace(/```json\s*/gi, "")
     .replace(/```/g, "")
