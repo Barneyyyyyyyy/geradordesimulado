@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { generateText } from "ai";
+import { generateObject, generateText } from "ai";
 import { z } from "zod";
 
 const AREA_LABEL: Record<string, string> = {
@@ -35,6 +35,39 @@ interface GeneratedQuestion {
   alternativas: { A: string; B: string; C: string; D: string; E: string };
   gabarito: "A" | "B" | "C" | "D" | "E";
   explicacao: string;
+}
+
+const GeneratedQuestionSchema = z.object({
+  assunto: z.string().min(3),
+  enunciado: z.string().min(20),
+  alternativas: z.object({
+    A: z.string().min(1),
+    B: z.string().min(1),
+    C: z.string().min(1),
+    D: z.string().min(1),
+    E: z.string().min(1),
+  }),
+  gabarito: z.enum(["A", "B", "C", "D", "E"]),
+  explicacao: z.string().min(20),
+});
+
+function repairJsonArray(text: string): string | null {
+  let cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```/g, "")
+    .replace(/[\x00-\x1F\x7F]/g, "")
+    .trim();
+
+  const start = cleaned.indexOf("[");
+  const end = cleaned.lastIndexOf("]");
+  if (start === -1 || end === -1 || end <= start) return null;
+
+  cleaned = cleaned
+    .slice(start, end + 1)
+    .replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\")
+    .replace(/,\s*([}\]])/g, "$1");
+
+  return cleaned;
 }
 
 async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<GeneratedQuestion[]> {
@@ -102,28 +135,16 @@ Português brasileiro. Varie os assuntos. Retorne APENAS um array JSON válido, 
   }
 ]`;
 
-  const { text } = await generateText({
-    model: gateway("google/gemini-2.5-flash"),
+  const { object } = await generateObject({
+    model: gateway("google/gemini-3-flash-preview"),
     prompt,
+    output: "array",
+    schema: GeneratedQuestionSchema,
+    maxOutputTokens: Math.max(6000, input.quantidade * 900),
+    experimental_repairText: async ({ text }) => repairJsonArray(text),
   });
 
-  // Strip markdown fences if present
-  let cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
-  const start = cleaned.indexOf("[");
-  const end = cleaned.lastIndexOf("]");
-  if (start === -1 || end === -1) throw new Error("IA não retornou JSON válido");
-  cleaned = cleaned.slice(start, end + 1);
-  // Remove control chars and fix invalid escape sequences from LLM output
-  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
-  let parsed: GeneratedQuestion[];
-  try {
-    parsed = JSON.parse(cleaned) as GeneratedQuestion[];
-  } catch {
-    const fixed = cleaned.replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\");
-    parsed = JSON.parse(fixed) as GeneratedQuestion[];
-  }
-
-  return parsed.filter(
+  return object.filter(
     (q) =>
       q?.enunciado &&
       q?.alternativas?.A && q.alternativas.B && q.alternativas.C && q.alternativas.D && q.alternativas.E &&
