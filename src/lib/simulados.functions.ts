@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { generateText } from "ai";
+import { generateObject, generateText } from "ai";
 import { z } from "zod";
 
 const AREA_LABEL: Record<string, string> = {
@@ -35,6 +35,39 @@ interface GeneratedQuestion {
   alternativas: { A: string; B: string; C: string; D: string; E: string };
   gabarito: "A" | "B" | "C" | "D" | "E";
   explicacao: string;
+}
+
+const GeneratedQuestionSchema = z.object({
+  assunto: z.string().min(3),
+  enunciado: z.string().min(20),
+  alternativas: z.object({
+    A: z.string().min(1),
+    B: z.string().min(1),
+    C: z.string().min(1),
+    D: z.string().min(1),
+    E: z.string().min(1),
+  }),
+  gabarito: z.enum(["A", "B", "C", "D", "E"]),
+  explicacao: z.string().min(20),
+});
+
+function repairJsonArray(text: string): string | null {
+  let cleaned = text
+    .replace(/```json\s*/gi, "")
+    .replace(/```/g, "")
+    .replace(/[\x00-\x1F\x7F]/g, "")
+    .trim();
+
+  const start = cleaned.indexOf("[");
+  const end = cleaned.lastIndexOf("]");
+  if (start === -1 || end === -1 || end <= start) return null;
+
+  cleaned = cleaned
+    .slice(start, end + 1)
+    .replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\")
+    .replace(/,\s*([}\]])/g, "$1");
+
+  return cleaned;
 }
 
 async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<GeneratedQuestion[]> {
