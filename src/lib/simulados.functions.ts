@@ -122,8 +122,9 @@ REGENERAÇÃO OBRIGATÓRIA — se durante a resolução for detectado que:
 - um ponto não existe;
 - uma reta não pode ser definida;
 - nenhuma alternativa corresponde ao resultado;
+- a solução encontrada não satisfaz TODAS as condições do enunciado;
 - o enunciado contém inconsistências (dados faltando, contradições, ambiguidade);
-então DESCARTE a questão e gere outra no lugar. Nunca entregue uma questão nessas condições.
+então DESCARTE a questão e gere outra no lugar. NUNCA escolha a alternativa "mais próxima", NUNCA arredonde para forçar encaixe e NUNCA tente justificar um gabarito incompatível com o cálculo.
 
 ESTILO POR BANCA:
 - ENEM: cotidiano, interdisciplinar, interpretação.
