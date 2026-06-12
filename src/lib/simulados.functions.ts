@@ -135,28 +135,16 @@ Português brasileiro. Varie os assuntos. Retorne APENAS um array JSON válido, 
   }
 ]`;
 
-  const { text } = await generateText({
-    model: gateway("google/gemini-2.5-flash"),
+  const { object } = await generateObject({
+    model: gateway("google/gemini-3-flash-preview"),
     prompt,
+    output: "array",
+    schema: GeneratedQuestionSchema,
+    maxOutputTokens: Math.max(6000, input.quantidade * 900),
+    experimental_repairText: async ({ text }) => repairJsonArray(text),
   });
 
-  // Strip markdown fences if present
-  let cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/, "").trim();
-  const start = cleaned.indexOf("[");
-  const end = cleaned.lastIndexOf("]");
-  if (start === -1 || end === -1) throw new Error("IA não retornou JSON válido");
-  cleaned = cleaned.slice(start, end + 1);
-  // Remove control chars and fix invalid escape sequences from LLM output
-  cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, "");
-  let parsed: GeneratedQuestion[];
-  try {
-    parsed = JSON.parse(cleaned) as GeneratedQuestion[];
-  } catch {
-    const fixed = cleaned.replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\");
-    parsed = JSON.parse(fixed) as GeneratedQuestion[];
-  }
-
-  return parsed.filter(
+  return object.filter(
     (q) =>
       q?.enunciado &&
       q?.alternativas?.A && q.alternativas.B && q.alternativas.C && q.alternativas.D && q.alternativas.E &&
