@@ -117,6 +117,13 @@ CONSTRUÇÃO DAS ALTERNATIVAS:
 
 VALIDAÇÃO INTERNA: gabarito conferido, cálculos verificados, coerência, uma só correta, distratores plausíveis, nível da banca. Se falhar, regenere ou omita.
 
+REGENERAÇÃO OBRIGATÓRIA — se durante a resolução for detectado que:
+- um ponto não existe;
+- uma reta não pode ser definida;
+- nenhuma alternativa corresponde ao resultado;
+- o enunciado contém inconsistências (dados faltando, contradições, ambiguidade);
+então DESCARTE a questão e gere outra no lugar. Nunca entregue uma questão nessas condições.
+
 ESTILO POR BANCA:
 - ENEM: cotidiano, interdisciplinar, interpretação.
 - FUVEST: técnico, direto, conceitual.
