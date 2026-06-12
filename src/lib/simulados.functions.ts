@@ -52,27 +52,42 @@ const GeneratedQuestionSchema = z.object({
 });
 
 function extractJsonArray(text: string): any[] | null {
-  let cleaned = text
+  const cleaned = text
     .replace(/```json\s*/gi, "")
     .replace(/```/g, "")
-    .replace(/[\x00-\x1F\x7F]/g, " ")
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, " ")
     .trim();
+
+  const tryParse = (s: string): any[] | null => {
+    try {
+      const p = JSON.parse(s);
+      if (Array.isArray(p)) return p;
+      if (p && typeof p === "object") {
+        for (const k of Object.keys(p)) if (Array.isArray((p as any)[k])) return (p as any)[k];
+      }
+    } catch {}
+    return null;
+  };
 
   const start = cleaned.indexOf("[");
   const end = cleaned.lastIndexOf("]");
-  if (start === -1 || end === -1 || end <= start) return null;
+  if (start !== -1 && end > start) {
+    const candidate = cleaned.slice(start, end + 1);
+    const fixed = candidate
+      .replace(/\\(?!["\\/bfnrtu])/g, "\\\\")
+      .replace(/,\s*([}\]])/g, "$1");
+    const r = tryParse(fixed) ?? tryParse(candidate);
+    if (r) return r;
 
-  cleaned = cleaned
-    .slice(start, end + 1)
-    .replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\")
-    .replace(/,\s*([}\]])/g, "$1");
-
-  try {
-    const parsed = JSON.parse(cleaned);
-    return Array.isArray(parsed) ? parsed : null;
-  } catch {
-    return null;
+    // Recover from truncation: keep up to last complete object
+    const lastObjEnd = fixed.lastIndexOf("}");
+    if (lastObjEnd > 0) {
+      const r2 = tryParse(fixed.slice(0, lastObjEnd + 1) + "]");
+      if (r2) return r2;
+    }
   }
+
+  return tryParse(cleaned);
 }
 
 async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<GeneratedQuestion[]> {
@@ -122,7 +137,10 @@ Português brasileiro. Retorne APENAS um array JSON válido, sem markdown, sem t
   });
 
   const raw = extractJsonArray(text);
-  if (!raw) throw new Error("Resposta da IA inválida. Tente novamente.");
+  if (!raw) {
+    console.error("[simulados] AI response não parseável:", text.slice(0, 1500));
+    throw new Error("Resposta da IA inválida. Tente novamente.");
+  }
 
   const valid: GeneratedQuestion[] = [];
   for (const q of raw) {
