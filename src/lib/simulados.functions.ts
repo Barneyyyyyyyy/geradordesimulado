@@ -51,7 +51,7 @@ const GeneratedQuestionSchema = z.object({
   explicacao: z.string().min(10),
 });
 
-
+function extractJsonArray(text: string): any[] | null {
   let cleaned = text
     .replace(/```json\s*/gi, "")
     .replace(/```/g, "")
