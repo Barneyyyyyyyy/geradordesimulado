@@ -37,25 +37,11 @@ interface GeneratedQuestion {
   explicacao: string;
 }
 
-const GeneratedQuestionSchema = z.object({
-  assunto: z.string().min(3),
-  enunciado: z.string().min(20),
-  alternativas: z.object({
-    A: z.string().min(1),
-    B: z.string().min(1),
-    C: z.string().min(1),
-    D: z.string().min(1),
-    E: z.string().min(1),
-  }),
-  gabarito: z.enum(["A", "B", "C", "D", "E"]),
-  explicacao: z.string().min(20),
-});
-
-function repairJsonArray(text: string): string | null {
+function extractJsonArray(text: string): any[] | null {
   let cleaned = text
     .replace(/```json\s*/gi, "")
     .replace(/```/g, "")
-    .replace(/[\x00-\x1F\x7F]/g, "")
+    .replace(/[\x00-\x1F\x7F]/g, " ")
     .trim();
 
   const start = cleaned.indexOf("[");
@@ -67,7 +53,12 @@ function repairJsonArray(text: string): string | null {
     .replace(/\\(?!["\\/bfnrt]|u[0-9a-fA-F]{4})/g, "\\\\")
     .replace(/,\s*([}\]])/g, "$1");
 
-  return cleaned;
+  try {
+    const parsed = JSON.parse(cleaned);
+    return Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<GeneratedQuestion[]> {
@@ -87,70 +78,44 @@ QUALIDADE E AUTENTICIDADE:
 - A questão deve ser INÉDITA mas com o mesmo padrão cognitivo das provas originais.
 
 PADRÃO DE ENUNCIADO:
-- NÃO crie textos genéricos ou explicações de apostila.
-- PRIORIZE: reportagens, gráficos (descritos textualmente), tabelas, mapas (descritos), trechos de livros, artigos científicos, documentos históricos, charges/tirinhas (descritas), campanhas publicitárias, situações-problema contextualizadas.
-- EVITE enunciados didáticos que expliquem o conteúdo antes de perguntar. O aluno deve interpretar, relacionar informações e aplicar conceitos.
-- Se a questão depende de texto/tabela/gráfico, INCLUA dentro do "enunciado".
+- PRIORIZE: reportagens, gráficos (descritos textualmente), tabelas, trechos de livros, artigos científicos, documentos históricos, charges/tirinhas (descritas), situações-problema contextualizadas.
+- EVITE enunciados didáticos. O aluno deve interpretar e aplicar conceitos.
 
-CONSTRUÇÃO DAS ALTERNATIVAS (CRÍTICO):
-1. Resolva a questão internamente passo a passo.
-2. Determine o gabarito correto com certeza absoluta.
-3. Gere DISTRATORES plausíveis — cada um representando um ERRO COMUM de estudante (cálculo errado, conceito invertido, interpretação parcial).
-4. Reverifique cálculos, unidades, arredondamentos e conversões.
-5. Garanta que exista EXATAMENTE UMA alternativa correta — proibido: duas corretas, nenhuma correta, gabarito ambíguo.
-6. A alternativa correta NÃO pode ser identificada apenas por repetir palavras do texto-base.
-7. Evite alternativas absurdas ou obviamente erradas.
+CONSTRUÇÃO DAS ALTERNATIVAS:
+1. Resolva internamente passo a passo e determine o gabarito.
+2. Gere DISTRATORES plausíveis representando erros comuns.
+3. Garanta EXATAMENTE UMA alternativa correta.
 
-VALIDAÇÃO INTERNA (execute antes de incluir a questão):
-✓ Gabarito verificado resolvendo do zero
-✓ Cálculos, unidades e conversões conferidos
-✓ Coerência do enunciado
-✓ Apenas UMA alternativa correta
-✓ Distratores plausíveis
-✓ Nível compatível com a banca
-✓ Estilo da banca preservado
-Se QUALQUER verificação falhar, REGENERE. Se ainda assim não tiver certeza, NÃO inclua — prefira gerar menos.
+VALIDAÇÃO INTERNA: gabarito conferido, cálculos verificados, coerência, uma só correta, distratores plausíveis, nível da banca. Se falhar, regenere ou omita.
 
 ESTILO POR BANCA:
-- ENEM: contextos do cotidiano, interdisciplinar, foco em interpretação.
-- FUVEST: técnico, direto, exige domínio conceitual profundo.
-- UNICAMP: contextualizado com texto-base, raciocínio e interpretação.
-- UNESP: enunciados claros, textos científicos/literários.
-- ITA/IME: alto rigor matemático/físico, múltiplas etapas.
-- ESA/EsPCEx/AFA/EFOMM: objetivo, aplicação direta de conceitos.
+- ENEM: cotidiano, interdisciplinar, interpretação.
+- FUVEST: técnico, direto, conceitual.
+- UNICAMP: texto-base, raciocínio.
+- UNESP: claros, textos científicos/literários.
 
-CAMPO "explicacao" — análise pedagógica COMPLETA, estruturada assim (use \\n para quebras):
-"**Gabarito:** [letra]\\n**Área:** [área]\\n**Competência/Habilidade:** [descrição]\\n**Dificuldade:** [Fácil/Médio/Difícil]\\n**Resolução:** [passo a passo detalhado]\\n**Erros comuns:** [explique brevemente qual erro leva a cada distrator]"
+CAMPO "explicacao" — use \\n: "**Gabarito:** [letra]\\n**Resolução:** [passo a passo]\\n**Erros comuns:** [por que cada distrator falha]"
 
-CAMPO "assunto": tema + referência de banca/ano de inspiração (ex: "Funções quadráticas (inspirado em FUVEST 2019)").
+CAMPO "assunto": tema + referência (ex: "Funções quadráticas (inspirado em FUVEST 2019)").
 
-Português brasileiro. Varie os assuntos. Retorne APENAS um array JSON válido, sem markdown:
-[
-  {
-    "assunto": "tema + referência",
-    "enunciado": "enunciado completo com texto-base se houver",
-    "alternativas": { "A": "...", "B": "...", "C": "...", "D": "...", "E": "..." },
-    "gabarito": "A" | "B" | "C" | "D" | "E",
-    "explicacao": "análise pedagógica estruturada conforme especificado"
-  }
-]`;
+Português brasileiro. Retorne APENAS um array JSON válido, sem markdown, sem texto antes ou depois:
+[{"assunto":"...","enunciado":"...","alternativas":{"A":"...","B":"...","C":"...","D":"...","E":"..."},"gabarito":"A","explicacao":"..."}]`;
 
-  const { object } = await generateObject({
+  const { text } = await generateText({
     model: gateway("google/gemini-3-flash-preview"),
     prompt,
-    output: "array",
-    schema: GeneratedQuestionSchema,
-    maxOutputTokens: Math.max(6000, input.quantidade * 900),
-    experimental_repairText: async ({ text }) => repairJsonArray(text),
+    maxOutputTokens: Math.max(8000, input.quantidade * 1000),
   });
 
-  return object.filter(
-    (q) =>
-      q?.enunciado &&
-      q?.alternativas?.A && q.alternativas.B && q.alternativas.C && q.alternativas.D && q.alternativas.E &&
-      ["A", "B", "C", "D", "E"].includes(q.gabarito) &&
-      q.explicacao
-  );
+  const raw = extractJsonArray(text);
+  if (!raw) throw new Error("Resposta da IA inválida. Tente novamente.");
+
+  const valid: GeneratedQuestion[] = [];
+  for (const q of raw) {
+    const parsed = GeneratedQuestionSchema.safeParse(q);
+    if (parsed.success) valid.push(parsed.data);
+  }
+  return valid;
 }
 
 export const createSimulado = createServerFn({ method: "POST" })
