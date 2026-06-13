@@ -9,6 +9,35 @@ import { AIDisclaimer } from "@/components/ai-disclaimer";
 type Area = "matematica" | "linguagens" | "humanas" | "natureza";
 type Banca = "enem" | "fuvest" | "unicamp" | "unesp";
 type Dif = "facil" | "medio" | "dificil" | "misto";
+type Modo = "area" | "materia";
+
+const MATERIAS: Record<Area, string[]> = {
+  matematica: [
+    "Álgebra", "Funções", "Geometria Plana", "Geometria Espacial",
+    "Geometria Analítica", "Trigonometria", "Logaritmos", "Progressões (PA e PG)",
+    "Matrizes e Determinantes", "Sistemas Lineares", "Análise Combinatória",
+    "Probabilidade", "Estatística", "Matemática Financeira", "Números Complexos",
+    "Polinômios", "Conjuntos Numéricos",
+  ],
+  natureza: [
+    "Física - Mecânica", "Física - Termologia", "Física - Óptica",
+    "Física - Ondulatória", "Física - Eletricidade", "Física - Eletromagnetismo",
+    "Física Moderna", "Química Geral", "Química Inorgânica", "Química Orgânica",
+    "Físico-Química", "Estequiometria", "Soluções", "Eletroquímica",
+    "Biologia Celular", "Genética", "Ecologia", "Evolução",
+    "Fisiologia Humana", "Botânica", "Zoologia", "Microbiologia",
+  ],
+  linguagens: [
+    "Interpretação de Texto", "Gramática", "Figuras de Linguagem",
+    "Literatura Brasileira", "Literatura Portuguesa", "Redação",
+    "Inglês", "Espanhol", "Artes", "Educação Física",
+  ],
+  humanas: [
+    "História do Brasil", "História Geral", "Geografia do Brasil",
+    "Geografia Geral", "Geopolítica", "Filosofia", "Sociologia",
+    "Atualidades", "Movimentos Sociais",
+  ],
+};
 
 export const Route = createFileRoute("/_authenticated/novo")({
   component: NovoSimulado,
@@ -17,16 +46,30 @@ export const Route = createFileRoute("/_authenticated/novo")({
 function NovoSimulado() {
   const navigate = useNavigate();
   const create = useServerFn(createSimulado);
+  const [modo, setModo] = useState<Modo>("area");
   const [area, setArea] = useState<Area>("matematica");
+  const [materia, setMateria] = useState<string>("");
   const [banca, setBanca] = useState<Banca>("enem");
   const [dificuldade, setDificuldade] = useState<Dif>("medio");
   const [quantidade, setQuantidade] = useState(5);
   const [loading, setLoading] = useState(false);
 
   async function start() {
+    if (modo === "materia" && !materia) {
+      toast.error("Selecione uma matéria");
+      return;
+    }
     setLoading(true);
     try {
-      const res = await create({ data: { area, banca, dificuldade, quantidade } });
+      const res = await create({
+        data: {
+          area,
+          banca,
+          dificuldade,
+          quantidade,
+          ...(modo === "materia" && materia ? { materia } : {}),
+        },
+      });
       navigate({ to: "/simulado/$id", params: { id: res.id } });
     } catch (e: any) {
       toast.error(e?.message || "Erro ao criar simulado");
@@ -53,12 +96,39 @@ function NovoSimulado() {
           ]} value={banca} onChange={setBanca as any} />
         </Section>
 
+        <Section label="Modo">
+          <Grid options={[
+            { v: "area", l: "Por área" },
+            { v: "materia", l: "Por matéria" },
+          ]} value={modo} onChange={(v) => { setModo(v as Modo); setMateria(""); }} />
+        </Section>
+
         <Section label="Área do conhecimento">
           <Grid options={[
             { v: "matematica", l: "Matemática" }, { v: "linguagens", l: "Linguagens" },
             { v: "humanas", l: "Humanas" }, { v: "natureza", l: "Natureza" },
-          ]} value={area} onChange={setArea as any} />
+          ]} value={area} onChange={(v) => { setArea(v as Area); setMateria(""); }} />
         </Section>
+
+        {modo === "materia" && (
+          <Section label="Matéria específica">
+            <div className="flex flex-wrap gap-2">
+              {MATERIAS[area].map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMateria(m)}
+                  className={`rounded-full px-3.5 py-2 text-xs font-semibold transition ${
+                    materia === m
+                      ? "bg-brand text-white"
+                      : "border border-border bg-card text-muted-foreground"
+                  }`}
+                >
+                  {m}
+                </button>
+              ))}
+            </div>
+          </Section>
+        )}
 
         <Section label="Dificuldade">
           <Grid options={[
