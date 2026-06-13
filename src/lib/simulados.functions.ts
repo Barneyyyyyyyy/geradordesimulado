@@ -100,7 +100,7 @@ async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<Ge
 
   const prompt = `Você é um especialista em vestibulares brasileiros (ENEM, FUVEST, UNICAMP, UNESP, ITA, IME, ESA, EsPCEx, AFA, EFOMM) com conhecimento profundo das provas reais.
 
-Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
+Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}${input.materia ? `, FOCO EXCLUSIVO na matéria/assunto: "${input.materia}" (todas as ${input.quantidade} questões devem ser estritamente desse conteúdo)` : ""}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
 
 QUALIDADE E AUTENTICIDADE:
 - Use questões reais da banca como INSPIRAÇÃO ESTRUTURAL apenas. PRESERVE: habilidade avaliada, raciocínio exigido, nível de dificuldade, estilo da banca.
