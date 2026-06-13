@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { createSimulado } from "@/lib/simulados.functions";
 import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { AIDisclaimer } from "@/components/ai-disclaimer";
 
 type Area = "matematica" | "linguagens" | "humanas" | "natureza";
 type Banca = "enem" | "fuvest" | "unicamp" | "unesp";
@@ -43,6 +44,8 @@ function NovoSimulado() {
       </header>
 
       <main className="mt-8 space-y-7">
+        <AIDisclaimer />
+
         <Section label="Banca">
           <Grid options={[
             { v: "enem", l: "ENEM" }, { v: "fuvest", l: "FUVEST" },

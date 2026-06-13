@@ -4,6 +4,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { getSimulado, answerQuestion, finalizeSimulado } from "@/lib/simulados.functions";
 import { useEffect, useRef, useState } from "react";
 import { Check, X, ArrowRight, Loader2 } from "lucide-react";
+import { AIDisclaimer } from "@/components/ai-disclaimer";
+import { ReportErrorButton } from "@/components/report-error-button";
 
 export const Route = createFileRoute("/_authenticated/simulado/$id")({
   component: ResponderSimulado,
@@ -116,12 +118,29 @@ function ResponderSimulado() {
 
       {/* Explicação */}
       {reveal && (
-        <div className="mt-5 rounded-3xl border border-border bg-card p-5">
-          <p className={`mb-2 font-display text-lg ${reveal.acertou ? "text-accent" : "text-energy"}`}>
-            {reveal.acertou ? "Mandou bem! 🎯" : "Quase! Vamos revisar."}
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">{q.explicacao}</p>
-        </div>
+        <>
+          <div className="mt-5 rounded-3xl border border-border bg-card p-5">
+            <p className={`mb-2 font-display text-lg ${reveal.acertou ? "text-accent" : "text-energy"}`}>
+              {reveal.acertou ? "Mandou bem! 🎯" : "Quase! Vamos revisar."}
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">{q.explicacao}</p>
+            <div className="mt-4 flex justify-end">
+              <ReportErrorButton
+                ctx={{
+                  questaoId: q.id,
+                  enunciado: q.enunciado,
+                  alternativas: alts,
+                  gabarito: reveal.gabarito,
+                  resposta_aluno: selected,
+                  explicacao: q.explicacao,
+                  area: data.area,
+                  assunto: q.assunto,
+                }}
+              />
+            </div>
+          </div>
+          <AIDisclaimer className="mt-3" />
+        </>
       )}
 
       {/* Action */}
