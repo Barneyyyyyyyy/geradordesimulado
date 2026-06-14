@@ -366,3 +366,51 @@ export const getHistorico = createServerFn({ method: "GET" })
       .limit(50);
     return data ?? [];
   });
+
+export const getAnaliseEvolucao = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: simIds } = await supabase
+      .from("simulados")
+      .select("id, area")
+      .eq("user_id", userId)
+      .eq("status", "finalizado");
+
+    if (!simIds || simIds.length === 0) {
+      return { porAssunto: [], piores: [], totalAcertos: 0, totalErros: 0 };
+    }
+    const areaMap: Record<string, string> = {};
+    for (const s of simIds) areaMap[s.id] = s.area;
+
+    const { data: questoes } = await supabase
+      .from("questoes")
+      .select("simulado_id, assunto, acertou, resposta_aluno")
+      .in("simulado_id", simIds.map((s) => s.id));
+
+    const agg: Record<string, { area: string; assunto: string; acertos: number; total: number }> = {};
+    let totalAcertos = 0;
+    let totalErros = 0;
+
+    for (const q of questoes ?? []) {
+      if (q.resposta_aluno == null) continue;
+      const area = areaMap[q.simulado_id] ?? "—";
+      const key = `${area}::${q.assunto}`;
+      if (!agg[key]) agg[key] = { area, assunto: q.assunto, acertos: 0, total: 0 };
+      agg[key].total += 1;
+      if (q.acertou) {
+        agg[key].acertos += 1;
+        totalAcertos += 1;
+      } else {
+        totalErros += 1;
+      }
+    }
+
+    const porAssunto = Object.values(agg)
+      .map((x) => ({ ...x, taxa: x.total > 0 ? Math.round((x.acertos / x.total) * 100) : 0 }))
+      .sort((a, b) => a.taxa - b.taxa);
+
+    const piores = porAssunto.filter((x) => x.total >= 2 && x.taxa < 70).slice(0, 5);
+
+    return { porAssunto, piores, totalAcertos, totalErros };
+  });
