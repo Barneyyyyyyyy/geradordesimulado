@@ -4,13 +4,13 @@ import { AlertTriangle, ChevronDown, Mail, Instagram } from "lucide-react";
 type Variant = "full" | "compact" | "footer";
 
 export function AIDisclaimer({ variant = "full", className = "" }: { variant?: Variant; className?: string }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(variant === "footer");
 
   if (variant === "footer") {
     return (
-      <footer className={`mx-auto max-w-2xl px-5 py-6 ${className}`}>
+      <footer className={`mx-auto max-w-2xl px-5 py-8 ${className}`}>
         <AIDisclaimer variant="compact" />
-        <p className="mt-3 text-center text-[10px] text-muted-foreground">
+        <p className="mt-4 text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} Aprovado · Simulados com IA
         </p>
       </footer>
