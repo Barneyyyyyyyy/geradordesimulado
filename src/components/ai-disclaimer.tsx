@@ -4,13 +4,13 @@ import { AlertTriangle, ChevronDown, Mail, Instagram } from "lucide-react";
 type Variant = "full" | "compact" | "footer";
 
 export function AIDisclaimer({ variant = "full", className = "" }: { variant?: Variant; className?: string }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(variant === "footer");
 
   if (variant === "footer") {
     return (
-      <footer className={`mx-auto max-w-2xl px-5 py-6 ${className}`}>
+      <footer className={`mx-auto max-w-2xl px-5 py-8 ${className}`}>
         <AIDisclaimer variant="compact" />
-        <p className="mt-3 text-center text-[10px] text-muted-foreground">
+        <p className="mt-4 text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} Aprovado · Simulados com IA
         </p>
       </footer>
@@ -18,14 +18,14 @@ export function AIDisclaimer({ variant = "full", className = "" }: { variant?: V
   }
 
   return (
-    <div className={`rounded-2xl border border-energy/40 bg-energy/10 ${className}`}>
+    <div className={`rounded-2xl border-2 border-energy/60 bg-energy/15 shadow-sm ${className}`}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center gap-3 p-3 text-left"
+        className="flex w-full items-center gap-3 p-4 text-left"
         aria-expanded={open}
       >
-        <AlertTriangle className="size-4 shrink-0 text-energy" />
-        <span className="flex-1 text-xs font-semibold text-foreground">
+        <AlertTriangle className="size-5 shrink-0 text-energy" />
+        <span className="flex-1 text-sm font-bold text-foreground">
           Aviso: questões geradas por IA podem conter erros
         </span>
         <ChevronDown className={`size-4 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`} />
