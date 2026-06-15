@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, ChevronDown, Mail, Instagram } from "lucide-react";
+import { AlertTriangle, ChevronDown, Mail } from "lucide-react";
 
 type Variant = "full" | "compact" | "footer";
 
@@ -46,9 +46,6 @@ export function AIDisclaimer({ variant = "full", className = "" }: { variant?: V
           <div className="space-y-1.5">
             <a href="mailto:filipezanetti14@gmail.com" className="flex items-center gap-2 text-brand hover:underline">
               <Mail className="size-3.5" /> filipezanetti14@gmail.com
-            </a>
-            <a href="https://instagram.com/filipeznet" target="_blank" rel="noreferrer" className="flex items-center gap-2 text-brand hover:underline">
-              <Instagram className="size-3.5" /> @filipeznet
             </a>
           </div>
         </div>
