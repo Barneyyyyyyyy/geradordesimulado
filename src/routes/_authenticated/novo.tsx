@@ -9,7 +9,23 @@ import { AIDisclaimer } from "@/components/ai-disclaimer";
 type Area = "matematica" | "linguagens" | "humanas" | "natureza";
 type Banca = "enem" | "fuvest" | "unicamp" | "unesp";
 type Dif = "facil" | "medio" | "dificil" | "misto";
-type Modo = "area" | "materia";
+type Modo = "area" | "materia" | "unica";
+
+type Preset = { key: string; label: string; emoji: string; area: Area; materia: string };
+const PRESETS_UNICA: Preset[] = [
+  { key: "matematica", label: "Matemática", emoji: "📐", area: "matematica", materia: "Matemática (conteúdo geral do ensino médio)" },
+  { key: "fisica", label: "Física", emoji: "⚛️", area: "natureza", materia: "Física (conteúdo geral do ensino médio)" },
+  { key: "quimica", label: "Química", emoji: "🧪", area: "natureza", materia: "Química (conteúdo geral do ensino médio)" },
+  { key: "biologia", label: "Biologia", emoji: "🧬", area: "natureza", materia: "Biologia (conteúdo geral do ensino médio)" },
+  { key: "historia", label: "História", emoji: "🏛️", area: "humanas", materia: "História (Brasil e Geral, conteúdo geral do ensino médio)" },
+  { key: "geografia", label: "Geografia", emoji: "🌎", area: "humanas", materia: "Geografia (Brasil e Mundo, conteúdo geral do ensino médio)" },
+  { key: "filosofia", label: "Filosofia", emoji: "🤔", area: "humanas", materia: "Filosofia (conteúdo geral do ensino médio)" },
+  { key: "sociologia", label: "Sociologia", emoji: "👥", area: "humanas", materia: "Sociologia (conteúdo geral do ensino médio)" },
+  { key: "portugues", label: "Português", emoji: "📚", area: "linguagens", materia: "Língua Portuguesa - gramática e interpretação" },
+  { key: "literatura", label: "Literatura", emoji: "📖", area: "linguagens", materia: "Literatura Brasileira e Portuguesa" },
+  { key: "ingles", label: "Inglês", emoji: "🇬🇧", area: "linguagens", materia: "Inglês - interpretação e gramática" },
+  { key: "redacao", label: "Redação", emoji: "✍️", area: "linguagens", materia: "Redação - estrutura dissertativo-argumentativa" },
+];
 
 const MATERIAS: Record<Area, string[]> = {
   matematica: [
@@ -116,20 +132,29 @@ function NovoSimulado() {
   const [quantidade, setQuantidade] = useState(5);
   const [loading, setLoading] = useState(false);
 
+  const [presetKey, setPresetKey] = useState<string>("");
+
   async function start() {
-    if (modo === "materia" && !materia) {
-      toast.error("Selecione uma matéria");
-      return;
+    let finalArea = area;
+    let finalMateria: string | undefined;
+    if (modo === "materia") {
+      if (!materia) { toast.error("Selecione uma matéria"); return; }
+      finalMateria = materia;
+    } else if (modo === "unica") {
+      const p = PRESETS_UNICA.find((x) => x.key === presetKey);
+      if (!p) { toast.error("Escolha uma matéria"); return; }
+      finalArea = p.area;
+      finalMateria = p.materia;
     }
     setLoading(true);
     try {
       const res = await create({
         data: {
-          area,
+          area: finalArea,
           banca,
           dificuldade,
           quantidade,
-          ...(modo === "materia" && materia ? { materia } : {}),
+          ...(finalMateria ? { materia: finalMateria } : {}),
         },
       });
       navigate({ to: "/simulado/$id", params: { id: res.id } });
@@ -165,15 +190,57 @@ function NovoSimulado() {
           ]} value={modo} onChange={(v) => { setModo(v as Modo); setMateria(""); }} />
         </Section>
 
-        <Section label="Área do conhecimento">
-          <Grid options={[
-            { v: "matematica", l: "Matemática" }, { v: "linguagens", l: "Linguagens" },
-            { v: "humanas", l: "Humanas" }, { v: "natureza", l: "Natureza" },
-          ]} value={area} onChange={(v) => { setArea(v as Area); setMateria(""); }} />
+        <Section label="Modo">
+          <div className="grid grid-cols-3 gap-2">
+            {[
+              { v: "area", l: "Por área" },
+              { v: "unica", l: "Matéria única" },
+              { v: "materia", l: "Tópico específico" },
+            ].map((o) => (
+              <button
+                key={o.v}
+                onClick={() => { setModo(o.v as Modo); setMateria(""); setPresetKey(""); }}
+                className={`rounded-2xl border-2 p-3 text-xs font-semibold transition ${
+                  modo === o.v ? "border-brand bg-brand/10 text-foreground" : "border-border bg-card text-muted-foreground"
+                }`}
+              >
+                {o.l}
+              </button>
+            ))}
+          </div>
         </Section>
 
+        {modo === "unica" && (
+          <Section label="Escolha a matéria">
+            <div className="grid grid-cols-2 gap-2">
+              {PRESETS_UNICA.map((p) => (
+                <button
+                  key={p.key}
+                  onClick={() => setPresetKey(p.key)}
+                  className={`flex items-center gap-2 rounded-2xl border-2 p-3.5 text-sm font-semibold transition ${
+                    presetKey === p.key
+                      ? "border-brand bg-brand/10 text-foreground"
+                      : "border-border bg-card text-muted-foreground"
+                  }`}
+                >
+                  <span className="text-lg">{p.emoji}</span> {p.label}
+                </button>
+              ))}
+            </div>
+          </Section>
+        )}
+
+        {(modo === "area" || modo === "materia") && (
+          <Section label="Área do conhecimento">
+            <Grid options={[
+              { v: "matematica", l: "Matemática" }, { v: "linguagens", l: "Linguagens" },
+              { v: "humanas", l: "Humanas" }, { v: "natureza", l: "Natureza" },
+            ]} value={area} onChange={(v) => { setArea(v as Area); setMateria(""); }} />
+          </Section>
+        )}
+
         {modo === "materia" && (
-          <Section label="Matéria específica">
+          <Section label="Tópico específico">
             <div className="flex flex-wrap gap-2">
               {MATERIAS[area].map((m) => (
                 <button
