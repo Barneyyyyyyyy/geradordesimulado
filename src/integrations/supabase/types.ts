@@ -88,6 +88,54 @@ export type Database = {
           },
         ]
       }
+      redacoes: {
+        Row: {
+          comentarios: Json
+          created_at: string
+          feedback_geral: string
+          id: string
+          modelo: string
+          nota_total: number
+          notas: Json
+          pontos_fortes: Json
+          pontos_fracos: Json
+          sugestoes: Json
+          tema: string
+          texto: string
+          user_id: string
+        }
+        Insert: {
+          comentarios?: Json
+          created_at?: string
+          feedback_geral?: string
+          id?: string
+          modelo: string
+          nota_total?: number
+          notas?: Json
+          pontos_fortes?: Json
+          pontos_fracos?: Json
+          sugestoes?: Json
+          tema: string
+          texto: string
+          user_id: string
+        }
+        Update: {
+          comentarios?: Json
+          created_at?: string
+          feedback_geral?: string
+          id?: string
+          modelo?: string
+          nota_total?: number
+          notas?: Json
+          pontos_fortes?: Json
+          pontos_fracos?: Json
+          sugestoes?: Json
+          tema?: string
+          texto?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       simulados: {
         Row: {
           acertos: number
