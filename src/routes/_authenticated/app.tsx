@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getDashboard } from "@/lib/simulados.functions";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Zap, Plus, TrendingUp } from "lucide-react";
+import { Flame, Zap, Plus, TrendingUp, PenLine } from "lucide-react";
 
 const AREA_LABEL: Record<string, string> = {
   matematica: "Matemática", linguagens: "Linguagens", humanas: "Humanas", natureza: "Natureza",
@@ -82,6 +82,13 @@ function Dashboard() {
           className="flex w-full items-center justify-center gap-3 rounded-3xl bg-accent py-5 font-display text-xl text-accent-foreground shadow-pop active:translate-y-1.5 active:shadow-none"
         >
           <Plus className="size-6" strokeWidth={3} /> CRIAR NOVO SIMULADO
+        </Link>
+
+        <Link
+          to="/redacao"
+          className="flex w-full items-center justify-center gap-3 rounded-3xl border-2 border-brand bg-brand/10 py-4 font-display text-lg text-foreground active:translate-y-1 transition"
+        >
+          <PenLine className="size-5 text-brand" /> Corrigir redação com IA
         </Link>
 
         {/* Último simulado */}
