@@ -183,12 +183,6 @@ function NovoSimulado() {
           ]} value={banca} onChange={setBanca as any} />
         </Section>
 
-        <Section label="Modo">
-          <Grid options={[
-            { v: "area", l: "Por área" },
-            { v: "materia", l: "Por matéria" },
-          ]} value={modo} onChange={(v) => { setModo(v as Modo); setMateria(""); }} />
-        </Section>
 
         <Section label="Modo">
           <div className="grid grid-cols-3 gap-2">
