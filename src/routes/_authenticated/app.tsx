@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getDashboard } from "@/lib/simulados.functions";
 import { supabase } from "@/integrations/supabase/client";
-import { Flame, Zap, Plus, TrendingUp, PenLine } from "lucide-react";
+import { Flame, Zap, Plus, TrendingUp } from "lucide-react";
 
 const AREA_LABEL: Record<string, string> = {
   matematica: "Matemática", linguagens: "Linguagens", humanas: "Humanas", natureza: "Natureza",
