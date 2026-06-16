@@ -21,9 +21,6 @@ function Resultado() {
   const total = data.questoes.length;
   const acertos = data.questoes.filter((q: any) => q.acertou).length;
   const pct = Math.round((acertos / total) * 100);
-  const tempo = data.tempo_segundos || 0;
-  const min = Math.floor(tempo / 60);
-  const sec = tempo % 60;
 
   return (
     <div className="mx-auto max-w-2xl px-5 pt-6">
@@ -32,10 +29,9 @@ function Resultado() {
         <h1 className="mt-2 font-display text-4xl">{pct >= 70 ? "Você arrasou! 🎉" : pct >= 50 ? "Bom trabalho 💪" : "Bora revisar 📚"}</h1>
       </div>
 
-      <div className="mt-8 grid grid-cols-3 gap-3">
+      <div className="mt-8 grid grid-cols-2 gap-3">
         <Stat label="Acertos" value={`${acertos}/${total}`} />
         <Stat label="Taxa" value={`${pct}%`} accent />
-        <Stat label="Tempo" value={`${min}:${String(sec).padStart(2, "0")}`} />
       </div>
 
       {data.feedback_ia && (
