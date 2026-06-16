@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRedacaoRouteImport } from './routes/_authenticated/redacao'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedNovoRouteImport } from './routes/_authenticated/novo'
 import { Route as AuthenticatedHistoricoRouteImport } from './routes/_authenticated/historico'
@@ -20,7 +19,6 @@ import { Route as AuthenticatedEstatisticasRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as AuthenticatedSimuladoIdRouteImport } from './routes/_authenticated/simulado.$id'
 import { Route as AuthenticatedResultadoIdRouteImport } from './routes/_authenticated/resultado.$id'
-import { Route as AuthenticatedRedacaoIdRouteImport } from './routes/_authenticated/redacao.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -35,11 +33,6 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRedacaoRoute = AuthenticatedRedacaoRouteImport.update({
-  id: '/redacao',
-  path: '/redacao',
-  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   id: '/perfil',
@@ -78,11 +71,6 @@ const AuthenticatedResultadoIdRoute =
     path: '/resultado/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedRedacaoIdRoute = AuthenticatedRedacaoIdRouteImport.update({
-  id: '/$id',
-  path: '/$id',
-  getParentRoute: () => AuthenticatedRedacaoRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -92,8 +80,6 @@ export interface FileRoutesByFullPath {
   '/historico': typeof AuthenticatedHistoricoRoute
   '/novo': typeof AuthenticatedNovoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
-  '/redacao': typeof AuthenticatedRedacaoRouteWithChildren
-  '/redacao/$id': typeof AuthenticatedRedacaoIdRoute
   '/resultado/$id': typeof AuthenticatedResultadoIdRoute
   '/simulado/$id': typeof AuthenticatedSimuladoIdRoute
 }
@@ -105,8 +91,6 @@ export interface FileRoutesByTo {
   '/historico': typeof AuthenticatedHistoricoRoute
   '/novo': typeof AuthenticatedNovoRoute
   '/perfil': typeof AuthenticatedPerfilRoute
-  '/redacao': typeof AuthenticatedRedacaoRouteWithChildren
-  '/redacao/$id': typeof AuthenticatedRedacaoIdRoute
   '/resultado/$id': typeof AuthenticatedResultadoIdRoute
   '/simulado/$id': typeof AuthenticatedSimuladoIdRoute
 }
@@ -120,8 +104,6 @@ export interface FileRoutesById {
   '/_authenticated/historico': typeof AuthenticatedHistoricoRoute
   '/_authenticated/novo': typeof AuthenticatedNovoRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
-  '/_authenticated/redacao': typeof AuthenticatedRedacaoRouteWithChildren
-  '/_authenticated/redacao/$id': typeof AuthenticatedRedacaoIdRoute
   '/_authenticated/resultado/$id': typeof AuthenticatedResultadoIdRoute
   '/_authenticated/simulado/$id': typeof AuthenticatedSimuladoIdRoute
 }
@@ -135,8 +117,6 @@ export interface FileRouteTypes {
     | '/historico'
     | '/novo'
     | '/perfil'
-    | '/redacao'
-    | '/redacao/$id'
     | '/resultado/$id'
     | '/simulado/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -148,8 +128,6 @@ export interface FileRouteTypes {
     | '/historico'
     | '/novo'
     | '/perfil'
-    | '/redacao'
-    | '/redacao/$id'
     | '/resultado/$id'
     | '/simulado/$id'
   id:
@@ -162,8 +140,6 @@ export interface FileRouteTypes {
     | '/_authenticated/historico'
     | '/_authenticated/novo'
     | '/_authenticated/perfil'
-    | '/_authenticated/redacao'
-    | '/_authenticated/redacao/$id'
     | '/_authenticated/resultado/$id'
     | '/_authenticated/simulado/$id'
   fileRoutesById: FileRoutesById
@@ -196,13 +172,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/redacao': {
-      id: '/_authenticated/redacao'
-      path: '/redacao'
-      fullPath: '/redacao'
-      preLoaderRoute: typeof AuthenticatedRedacaoRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/perfil': {
       id: '/_authenticated/perfil'
@@ -253,26 +222,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResultadoIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/redacao/$id': {
-      id: '/_authenticated/redacao/$id'
-      path: '/$id'
-      fullPath: '/redacao/$id'
-      preLoaderRoute: typeof AuthenticatedRedacaoIdRouteImport
-      parentRoute: typeof AuthenticatedRedacaoRoute
-    }
   }
 }
-
-interface AuthenticatedRedacaoRouteChildren {
-  AuthenticatedRedacaoIdRoute: typeof AuthenticatedRedacaoIdRoute
-}
-
-const AuthenticatedRedacaoRouteChildren: AuthenticatedRedacaoRouteChildren = {
-  AuthenticatedRedacaoIdRoute: AuthenticatedRedacaoIdRoute,
-}
-
-const AuthenticatedRedacaoRouteWithChildren =
-  AuthenticatedRedacaoRoute._addFileChildren(AuthenticatedRedacaoRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppRoute: typeof AuthenticatedAppRoute
@@ -280,7 +231,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedHistoricoRoute: typeof AuthenticatedHistoricoRoute
   AuthenticatedNovoRoute: typeof AuthenticatedNovoRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
-  AuthenticatedRedacaoRoute: typeof AuthenticatedRedacaoRouteWithChildren
   AuthenticatedResultadoIdRoute: typeof AuthenticatedResultadoIdRoute
   AuthenticatedSimuladoIdRoute: typeof AuthenticatedSimuladoIdRoute
 }
@@ -291,7 +241,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHistoricoRoute: AuthenticatedHistoricoRoute,
   AuthenticatedNovoRoute: AuthenticatedNovoRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
-  AuthenticatedRedacaoRoute: AuthenticatedRedacaoRouteWithChildren,
   AuthenticatedResultadoIdRoute: AuthenticatedResultadoIdRoute,
   AuthenticatedSimuladoIdRoute: AuthenticatedSimuladoIdRoute,
 }
