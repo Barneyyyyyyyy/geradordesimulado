@@ -411,6 +411,10 @@ export const getAnaliseEvolucao = createServerFn({ method: "GET" })
       .sort((a, b) => a.taxa - b.taxa);
 
     const piores = porAssunto.filter((x) => x.total >= 2 && x.taxa < 70).slice(0, 5);
+    const melhores = [...porAssunto]
+      .filter((x) => x.total >= 2 && x.taxa >= 70)
+      .sort((a, b) => b.taxa - a.taxa)
+      .slice(0, 5);
 
-    return { porAssunto, piores, totalAcertos, totalErros };
+    return { porAssunto, piores, melhores, totalAcertos, totalErros };
   });
