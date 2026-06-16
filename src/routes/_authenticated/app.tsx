@@ -84,12 +84,6 @@ function Dashboard() {
           <Plus className="size-6" strokeWidth={3} /> CRIAR NOVO SIMULADO
         </Link>
 
-        <Link
-          to="/redacao"
-          className="flex w-full items-center justify-center gap-3 rounded-3xl border-2 border-brand bg-brand/10 py-4 font-display text-lg text-foreground active:translate-y-1 transition"
-        >
-          <PenLine className="size-5 text-brand" /> Corrigir redação com IA
-        </Link>
 
         {/* Último simulado */}
         <section>
