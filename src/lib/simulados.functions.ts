@@ -25,7 +25,7 @@ const DIF_LABEL: Record<string, string> = {
 
 const CreateInput = z.object({
   banca: z.enum(["enem", "fuvest", "unicamp", "unesp"]),
-  area: z.enum(["matematica", "linguagens", "humanas", "natureza"]),
+  area: z.enum(["matematica", "linguagens", "humanas", "natureza", "todas"]),
   materia: z.string().trim().max(80).optional(),
   dificuldade: z.enum(["facil", "medio", "dificil", "misto"]),
   quantidade: z.number().int().min(5).max(45),
