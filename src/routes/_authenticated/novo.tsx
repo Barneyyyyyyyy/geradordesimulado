@@ -191,11 +191,12 @@ function NovoSimulado() {
 
 
         <Section label="Modo">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
               { v: "area", l: "Por área" },
               { v: "unica", l: "Matéria única" },
               { v: "materia", l: "Tópico específico" },
+              { v: "todas", l: "Todas as matérias" },
             ].map((o) => (
               <button
                 key={o.v}
