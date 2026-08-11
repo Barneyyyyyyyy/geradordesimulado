@@ -139,9 +139,11 @@ function NovoSimulado() {
   const [presetKey, setPresetKey] = useState<string>("");
 
   async function start() {
-    let finalArea = area;
+    let finalArea: Area = area;
     let finalMateria: string | undefined;
-    if (modo === "materia") {
+    if (modo === "todas") {
+      finalArea = "todas";
+    } else if (modo === "materia") {
       if (!materia) { toast.error("Selecione uma matéria"); return; }
       finalMateria = materia;
     } else if (modo === "unica") {
