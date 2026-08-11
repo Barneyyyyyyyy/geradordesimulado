@@ -6,10 +6,10 @@ import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AIDisclaimer } from "@/components/ai-disclaimer";
 
-type Area = "matematica" | "linguagens" | "humanas" | "natureza";
+type Area = "matematica" | "linguagens" | "humanas" | "natureza" | "todas";
 type Banca = "enem" | "fuvest" | "unicamp" | "unesp";
 type Dif = "facil" | "medio" | "dificil" | "misto";
-type Modo = "area" | "materia" | "unica";
+type Modo = "area" | "materia" | "unica" | "todas";
 
 type Preset = { key: string; label: string; emoji: string; area: Area; materia: string };
 const PRESETS_UNICA: Preset[] = [
@@ -118,6 +118,7 @@ const MATERIAS: Record<Area, string[]> = {
     "Sociologia - Movimentos Sociais", "Sociologia - Cidadania e Direitos",
     "Atualidades", "Atualidades - Brasil", "Atualidades - Mundo",
   ],
+  todas: [],
 };
 
 export const Route = createFileRoute("/_authenticated/novo")({
@@ -138,9 +139,11 @@ function NovoSimulado() {
   const [presetKey, setPresetKey] = useState<string>("");
 
   async function start() {
-    let finalArea = area;
+    let finalArea: Area = area;
     let finalMateria: string | undefined;
-    if (modo === "materia") {
+    if (modo === "todas") {
+      finalArea = "todas";
+    } else if (modo === "materia") {
       if (!materia) { toast.error("Selecione uma matéria"); return; }
       finalMateria = materia;
     } else if (modo === "unica") {
@@ -188,11 +191,12 @@ function NovoSimulado() {
 
 
         <Section label="Modo">
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {[
               { v: "area", l: "Por área" },
               { v: "unica", l: "Matéria única" },
               { v: "materia", l: "Tópico específico" },
+              { v: "todas", l: "Todas as matérias" },
             ].map((o) => (
               <button
                 key={o.v}

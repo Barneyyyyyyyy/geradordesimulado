@@ -8,6 +8,7 @@ const AREA_LABEL: Record<string, string> = {
   linguagens: "Linguagens, Códigos e suas Tecnologias",
   humanas: "Ciências Humanas e suas Tecnologias",
   natureza: "Ciências da Natureza e suas Tecnologias",
+  todas: "Misturada — todas as áreas do conhecimento",
 };
 const BANCA_LABEL: Record<string, string> = {
   enem: "ENEM (Exame Nacional do Ensino Médio)",
@@ -24,7 +25,7 @@ const DIF_LABEL: Record<string, string> = {
 
 const CreateInput = z.object({
   banca: z.enum(["enem", "fuvest", "unicamp", "unesp"]),
-  area: z.enum(["matematica", "linguagens", "humanas", "natureza"]),
+  area: z.enum(["matematica", "linguagens", "humanas", "natureza", "todas"]),
   materia: z.string().trim().max(80).optional(),
   dificuldade: z.enum(["facil", "medio", "dificil", "misto"]),
   quantidade: z.number().int().min(5).max(45),
@@ -100,7 +101,7 @@ async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<Ge
 
   const prompt = `Você é um especialista em vestibulares brasileiros (ENEM, FUVEST, UNICAMP, UNESP, ITA, IME, ESA, EsPCEx, AFA, EFOMM) com conhecimento profundo das provas reais.
 
-Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) da área ${AREA_LABEL[input.area]}${input.materia ? `, FOCO EXCLUSIVO na matéria/assunto: "${input.materia}" (todas as ${input.quantidade} questões devem ser estritamente desse conteúdo)` : ""}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
+Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) ${input.area === "todas" ? "MISTURANDO TODAS AS ÁREAS DO CONHECIMENTO (Matemática, Linguagens, Ciências Humanas e Ciências da Natureza) — distribua as questões de forma equilibrada entre as quatro áreas" : `da área ${AREA_LABEL[input.area]}`}${input.materia ? `, FOCO EXCLUSIVO na matéria/assunto: \"${input.materia}\" (todas as ${input.quantidade} questões devem ser estritamente desse conteúdo)` : ""}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
 
 QUALIDADE E AUTENTICIDADE:
 - Use questões reais da banca como INSPIRAÇÃO ESTRUTURAL apenas. PRESERVE: habilidade avaliada, raciocínio exigido, nível de dificuldade, estilo da banca.

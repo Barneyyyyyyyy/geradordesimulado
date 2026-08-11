@@ -219,7 +219,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      area_conhecimento: "matematica" | "linguagens" | "humanas" | "natureza"
+      area_conhecimento:
+        | "matematica"
+        | "linguagens"
+        | "humanas"
+        | "natureza"
+        | "todas"
       banca_vestibular: "enem" | "fuvest" | "unicamp" | "unesp"
       dificuldade: "facil" | "medio" | "dificil" | "misto"
       simulado_status: "em_andamento" | "finalizado"
@@ -350,7 +355,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      area_conhecimento: ["matematica", "linguagens", "humanas", "natureza"],
+      area_conhecimento: [
+        "matematica",
+        "linguagens",
+        "humanas",
+        "natureza",
+        "todas",
+      ],
       banca_vestibular: ["enem", "fuvest", "unicamp", "unesp"],
       dificuldade: ["facil", "medio", "dificil", "misto"],
       simulado_status: ["em_andamento", "finalizado"],

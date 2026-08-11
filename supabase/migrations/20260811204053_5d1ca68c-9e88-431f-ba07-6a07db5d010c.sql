@@ -1,0 +1,1 @@
+ALTER TYPE public.area_conhecimento ADD VALUE IF NOT EXISTS 'todas';
