@@ -8,6 +8,7 @@ const AREA_LABEL: Record<string, string> = {
   linguagens: "Linguagens, Códigos e suas Tecnologias",
   humanas: "Ciências Humanas e suas Tecnologias",
   natureza: "Ciências da Natureza e suas Tecnologias",
+  todas: "Misturada — todas as áreas do conhecimento",
 };
 const BANCA_LABEL: Record<string, string> = {
   enem: "ENEM (Exame Nacional do Ensino Médio)",
