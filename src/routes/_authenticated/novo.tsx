@@ -118,6 +118,7 @@ const MATERIAS: Record<Area, string[]> = {
     "Sociologia - Movimentos Sociais", "Sociologia - Cidadania e Direitos",
     "Atualidades", "Atualidades - Brasil", "Atualidades - Mundo",
   ],
+  todas: [],
 };
 
 export const Route = createFileRoute("/_authenticated/novo")({
