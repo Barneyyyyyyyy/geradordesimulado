@@ -6,10 +6,10 @@ import { ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { AIDisclaimer } from "@/components/ai-disclaimer";
 
-type Area = "matematica" | "linguagens" | "humanas" | "natureza";
+type Area = "matematica" | "linguagens" | "humanas" | "natureza" | "todas";
 type Banca = "enem" | "fuvest" | "unicamp" | "unesp";
 type Dif = "facil" | "medio" | "dificil" | "misto";
-type Modo = "area" | "materia" | "unica";
+type Modo = "area" | "materia" | "unica" | "todas";
 
 type Preset = { key: string; label: string; emoji: string; area: Area; materia: string };
 const PRESETS_UNICA: Preset[] = [
