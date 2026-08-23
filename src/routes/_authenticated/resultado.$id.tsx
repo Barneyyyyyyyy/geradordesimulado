@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { getSimulado } from "@/lib/simulados.functions";
 import { Check, X, Loader2, Sparkles, Home, Plus } from "lucide-react";
+import { DuvidaIA } from "@/components/duvida-ia";
 
 const BANCA: Record<string, string> = { enem: "ENEM", fuvest: "FUVEST", unicamp: "UNICAMP", unesp: "UNESP" };
 const AREA: Record<string, string> = { matematica: "Matemática", linguagens: "Linguagens", humanas: "Humanas", natureza: "Natureza" };
@@ -64,6 +65,7 @@ function Resultado() {
               <p className="mb-3 text-sm text-foreground whitespace-pre-wrap">{q.enunciado}</p>
               <p className="text-xs text-muted-foreground">Sua resposta: <span className="font-bold text-foreground">{q.resposta_aluno ?? "—"}</span> · Gabarito: <span className="font-bold text-accent">{q.gabarito}</span></p>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">{q.explicacao}</p>
+              <DuvidaIA questaoId={q.id} className="mt-4" />
             </div>
           </details>
         ))}

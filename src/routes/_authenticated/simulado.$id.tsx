@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, X, ArrowRight, Loader2 } from "lucide-react";
 import { AIDisclaimer } from "@/components/ai-disclaimer";
 import { ReportErrorButton } from "@/components/report-error-button";
+import { DuvidaIA } from "@/components/duvida-ia";
 
 export const Route = createFileRoute("/_authenticated/simulado/$id")({
   component: ResponderSimulado,
@@ -139,6 +140,7 @@ function ResponderSimulado() {
               />
             </div>
           </div>
+          <DuvidaIA questaoId={q.id} className="mt-3" />
           <AIDisclaimer className="mt-3" />
         </>
       )}
