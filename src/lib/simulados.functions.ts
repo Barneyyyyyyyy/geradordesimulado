@@ -118,6 +118,12 @@ CONSTRUÇÃO DAS ALTERNATIVAS:
 3. Garanta EXATAMENTE UMA alternativa correta.
 4. CONFERÊNCIA DO GABARITO: após calcular o resultado final, percorra as 5 alternativas (A-E) e identifique explicitamente qual delas contém esse valor. Defina o campo "gabarito" como a letra dessa alternativa. Se nenhuma alternativa corresponder ao valor calculado, DESCARTE a questão e gere outra. Nunca marque como gabarito uma letra cujo conteúdo não bate com o resultado.
 
+DIVERSIDADE (REGRA OBRIGATÓRIA):
+- DISTRIBUIÇÃO DOS GABARITOS: as letras corretas devem ser distribuídas de forma equilibrada e VARIADA entre A, B, C, D e E ao longo das ${input.quantidade} questões — cada letra deve aparecer como gabarito aproximadamente ${Math.max(1, Math.round(input.quantidade / 5))} vez(es). É PROIBIDO concentrar gabaritos na mesma letra ou usar sequências previsíveis (A,B,C,D,E ou C,C,B,B...). Embaralhe de forma irregular.
+- POSIÇÃO DA RESPOSTA: para cada questão, decida a letra do gabarito ANTES de escrever as alternativas, sorteando entre A-E, e posicione a resposta correta nessa letra.
+- VARIEDADE ESTRUTURAL: NÃO repita o mesmo padrão de enunciado entre as questões. Alterne os formatos: situação-problema, texto-base, tabela, gráfico descrito, charge descrita, citação, caso histórico, experimento. Evite começar enunciados sempre da mesma forma.
+- VARIEDADE DE TAMANHO: alterne enunciados curtos, médios e longos; alternativas curtas e longas. Evite que a alternativa correta seja sempre a mais longa/detalhada (padrão manjado) — às vezes a correta deve ser a mais curta.
+
 VALIDAÇÃO INTERNA: gabarito conferido, cálculos verificados, coerência, uma só correta, distratores plausíveis, nível da banca. Se falhar, regenere ou omita.
 
 REGENERAÇÃO OBRIGATÓRIA — se durante a resolução for detectado que:
