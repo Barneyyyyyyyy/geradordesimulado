@@ -150,6 +150,7 @@ Português brasileiro. Retorne APENAS um array JSON válido, sem markdown, sem t
   const { text } = await generateText({
     model: gateway("google/gemini-3-flash-preview"),
     prompt,
+    temperature: 1,
     maxOutputTokens: Math.max(8000, input.quantidade * 1000),
   });
 
