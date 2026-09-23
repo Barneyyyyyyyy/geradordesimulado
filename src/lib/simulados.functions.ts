@@ -17,10 +17,10 @@ const BANCA_LABEL: Record<string, string> = {
   unesp: "UNESP",
 };
 const DIF_LABEL: Record<string, string> = {
-  facil: "fácil (introdutório)",
-  medio: "médio (nível médio de prova real)",
-  dificil: "difícil (questões de discriminação)",
-  misto: "misto (variar entre fácil, médio e difícil)",
+  facil: "FÁCIL — equivalente às questões fáceis de prova real (taxa de acerto ~60%). Ainda assim exige interpretação de texto-base e pelo menos 2 passos de raciocínio; NUNCA perguntas de definição direta ou decoreba trivial",
+  medio: "MÉDIO — equivalente às questões médias de prova real (taxa de acerto ~30-45%). Exige 3-4 passos de raciocínio, integração de 2 conceitos e distratores muito plausíveis",
+  dificil: "DIFÍCIL — equivalente às questões mais difíceis da prova (taxa de acerto <20%), nível de 2ª fase FUVEST/UNICAMP e itens de alta proficiência TRI do ENEM. Exige 4+ passos, integração de múltiplos conceitos, dados implícitos, pegadinhas conceituais e distratores que representam erros sofisticados",
+  misto: "MISTO — ~30% nível fácil de prova real, ~40% médio e ~30% difícil (itens de alta proficiência TRI / 2ª fase)",
 };
 
 const CreateInput = z.object({
@@ -102,6 +102,13 @@ async function generateQuestions(input: z.infer<typeof CreateInput>): Promise<Ge
   const prompt = `Você é um especialista em vestibulares brasileiros (ENEM, FUVEST, UNICAMP, UNESP, ITA, IME, ESA, EsPCEx, AFA, EFOMM) com conhecimento profundo das provas reais.
 
 Gere ${input.quantidade} questões INÉDITAS de múltipla escolha (5 alternativas A-E) ${input.area === "todas" ? "MISTURANDO TODAS AS ÁREAS DO CONHECIMENTO (Matemática, Linguagens, Ciências Humanas e Ciências da Natureza) — distribua as questões de forma equilibrada entre as quatro áreas" : `da área ${AREA_LABEL[input.area]}`}${input.materia ? `, FOCO EXCLUSIVO na matéria/assunto: \"${input.materia}\" (todas as ${input.quantidade} questões devem ser estritamente desse conteúdo)` : ""}, banca-alvo ${BANCA_LABEL[input.banca]}, dificuldade ${DIF_LABEL[input.dificuldade]}.
+
+CALIBRAÇÃO DE DIFICULDADE (CRÍTICO):
+- As questões estão sendo percebidas como FÁCEIS DEMAIS. Eleve o nível: tome como referência as provas reais, nunca livros didáticos ou exercícios de fixação.
+- PROIBIDO: perguntas de definição direta, aplicação imediata de fórmula em 1 passo, respostas identificáveis sem ler o texto-base, alternativas absurdas eliminváveis de cara.
+- Em exatas: exija modelagem da situação, várias etapas, conversões de unidade, interpretação de gráfico/tabela e números não triviais.
+- Em humanas/linguagens: exija inferência, relação entre texto e contexto histórico/conceitual, e distratores que são parcialmente verdadeiros.
+- Todos os 4 distratores devem ser plausíveis para um aluno que domina parcialmente o conteúdo.
 
 QUALIDADE E AUTENTICIDADE:
 - Use questões reais da banca como INSPIRAÇÃO ESTRUTURAL apenas. PRESERVE: habilidade avaliada, raciocínio exigido, nível de dificuldade, estilo da banca.
