@@ -165,7 +165,42 @@ Português brasileiro. Retorne APENAS um array JSON válido, sem markdown, sem t
     const parsed = GeneratedQuestionSchema.safeParse(q);
     if (parsed.success) valid.push(parsed.data);
   }
-  return valid;
+  return balanceAnswers(valid);
+}
+
+type Letter = "A" | "B" | "C" | "D" | "E";
+const LETTERS: Letter[] = ["A", "B", "C", "D", "E"];
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Força distribuição equilibrada dos gabaritos trocando a alternativa correta de posição
+function balanceAnswers(qs: GeneratedQuestion[]): GeneratedQuestion[] {
+  const pool: Letter[] = [];
+  while (pool.length < qs.length) pool.push(...shuffle(LETTERS));
+  const targets = shuffle(pool.slice(0, qs.length));
+
+  return qs.map((q, i) => {
+    const from = q.gabarito;
+    const to = targets[i];
+    if (from === to) return q;
+    const alt = { ...q.alternativas };
+    [alt[from], alt[to]] = [alt[to], alt[from]];
+    const swap = (l: string) => (l === from ? to : l === to ? from : l);
+    const explicacao = q.explicacao
+      .replace(
+        /(Gabarito:?\*{0,2}:?\s*|alternativas?\s+|letras?\s+|op[çc][ãa]o\s+|\()([A-E])(?![a-zà-ú])/gi,
+        (_m, pre: string, l: string) => pre + swap(l.toUpperCase()),
+      )
+      .replace(/(^|\n|\s)([A-E])(\)|:)/g, (_m, pre: string, l: string, suf: string) => pre + swap(l) + suf);
+    return { ...q, alternativas: alt, gabarito: to, explicacao };
+  });
 }
 
 export const createSimulado = createServerFn({ method: "POST" })
